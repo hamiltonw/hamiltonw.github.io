@@ -5,4 +5,4 @@
 layout: home
 ---
 
-Hello world.
+Hello world. Try going [here]({% link about.markdown %})
