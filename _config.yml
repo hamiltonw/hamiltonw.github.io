@@ -28,6 +28,7 @@ github_username:  hamiltonw
 linkedin_username: wesley-hamilton-157432248
 
 # Build settings
+theme: minima
 plugins:
   - jekyll-feed
 
