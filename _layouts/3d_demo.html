@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    
+    <link rel="stylesheet" href="{{ '/assets/css/3d_demo.css' | relative_url }}">
+</head>
+<body>
+
+    {% include header.html %}
+
+    <!-- Visualizer container -->
+    <div id="visualizer"></div>
+
+    <main class="page-content" aria-label="Content">
+        {{ content }}
+    </main>
+
+    <footer class="site-footer h-card">
+        <!-- Footer content -->
+    </footer>
+
+    <!-- JavaScript files -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three/build/three.module.js",
+                "OrbitControls": "https://unpkg.com/three/examples/jsm/controls/OrbitControls.js",
+                "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+            }
+        }
+    </script>
+    <script type="module" src="{{ '/scripts/visualize.js' | relative_url }}"></script>
+</body>
+</html>

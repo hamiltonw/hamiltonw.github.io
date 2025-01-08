@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header>
+        <header>
+    <!-- Navigation and other header content -->
+    <nav>
+        <div class="trigger">
+            <a class="page-link" href="/">About</a>
+            <div class="dropdown">
+                <a class="page-link dropdown-toggle" href="#">Projects</a>
+                <div class="dropdown-content">
+                    
+                        <a href="/projects/ibm_coursera/">IBM Enterprise AI Coursera Capstone</a>
+                    
+                        <a href="/projects/kaggle/">Kaggle Projects</a>
+                    
+                        <a href="/projects/manifold_communities/">Manifold Communities</a>
+                    
+                        <a href="/projects/math_modeling_llms/">An LLM for Math Modeling Education</a>
+                    
+                        <a href="/projects/proteins/">Shape of Protein Space</a>
+                    
+                        <a href="/projects/redistricting/">Resilient Redistricting</a>
+                    
+                        <a href="/projects/vasculature/">Synthetic Vasculature</a>
+                    
+                </div>
+            </div>
+            <div class="dropdown">
+                <a class="page-link dropdown-toggle" href="#">Outreach</a>
+                <div class="dropdown-content">
+                    
+                        <a href="/outreach/outreach/">Outreach and Service</a>
+                    
+                        <a href="/outreach/teaching/">Old Teaching Endeavours</a>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    
+</header>
+<hr class="header-separator">
+    </header>
+
+    <main class="page-content" aria-label="Content">
+        <h1 id="contact-form">Contact form</h1>
+<p>Questions? Comments? Complaints? Otherwise want to get in touch with me? Fill out this form and I’ll be in touch!</p>
+
+
+        <form id="form-du-contact" action="javascript:void(0);">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required><br>
+
+            <label for="body">Message:</label>
+            <textarea id="body" name="body" required></textarea><br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('form-du-contact');
+            console.log('Form element:', form); // Log the form element
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    console.log('Form submitted');
+                    var email = document.getElementById('email').value;
+                    var emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+                    if (!emailPattern.test(email)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+
+                    var formData = {
+                        name: document.getElementById('name').value,
+                        email: email,
+                        subject: document.getElementById('subject').value,
+                        message: document.getElementById('body').value
+                    };
+
+                    console.log('Form Data:', formData);
+
+                    fetch('https://pizem6iimg.execute-api.us-east-1.amazonaws.com/dev/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => {
+                        console.log('Response:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data:', data);
+                        alert('Message sent successfully!');
+                        document.getElementById('form-du-contact').reset();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('There was an error sending your message.');
+                    });
+                });
+            } else {
+                console.error('Form not found');
+            }
+        });
+    </script>
+
+<footer class="site-footer">
+    <nav>
+        <ul>
+            <li><a href="https://github.com/hamiltonw" target="_blank">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/wesley-hamilton-157432248" target="_blank">LinkedIn</a></li>
+            <li><a href="/contact/">Contact</a></li>
+        </ul>
+    </nav>
+</footer>
+</body>
+</html>

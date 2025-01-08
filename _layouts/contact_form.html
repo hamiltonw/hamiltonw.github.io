@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+    <header>
+        {% include header.html %}
+    </header>
+
+    <main class="page-content" aria-label="Content">
+        {{ content }}
+
+        <form id="form-du-contact" action="javascript:void(0);">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required><br>
+
+            <label for="body">Message:</label>
+            <textarea id="body" name="body" required></textarea><br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('form-du-contact');
+            console.log('Form element:', form); // Log the form element
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    console.log('Form submitted');
+                    var email = document.getElementById('email').value;
+                    var emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+                    if (!emailPattern.test(email)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+
+                    var formData = {
+                        name: document.getElementById('name').value,
+                        email: email,
+                        subject: document.getElementById('subject').value,
+                        message: document.getElementById('body').value
+                    };
+
+                    console.log('Form Data:', formData);
+
+                    fetch('https://pizem6iimg.execute-api.us-east-1.amazonaws.com/dev/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => {
+                        console.log('Response:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data:', data);
+                        alert('Message sent successfully!');
+                        document.getElementById('form-du-contact').reset();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('There was an error sending your message.');
+                    });
+                });
+            } else {
+                console.error('Form not found');
+            }
+        });
+    </script>
+
+{% include footer.html %}
+</body>
+</html>

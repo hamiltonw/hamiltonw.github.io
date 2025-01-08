@@ -1,0 +1,29 @@
+<header>
+    <!-- Navigation and other header content -->
+    <nav>
+        <div class="trigger">
+            <a class="page-link" href="/">About</a>
+            <div class="dropdown">
+                <a class="page-link dropdown-toggle" href="#">Projects</a>
+                <div class="dropdown-content">
+                    {% for project in site.projects %}
+                        <a href="{{ project.url }}">{{ project.title }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="dropdown">
+                <a class="page-link dropdown-toggle" href="#">Outreach</a>
+                <div class="dropdown-content">
+                    {% for outreach_site in site.outreach %}
+                        <a href="{{ outreach_site.url }}">{{ outreach_site.title }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% if site.google_analytics and jekyll.environment == 'production' %}
+        {% include analytics.html %}
+    {% endif %}
+</header>
+<hr class="header-separator">
