@@ -2,7 +2,7 @@
 
 layout: contact_form
 title: Contact me!
-permalink: /contact
+permalink: /contact/
 ---
 
 # Contact form
