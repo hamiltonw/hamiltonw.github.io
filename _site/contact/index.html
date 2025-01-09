@@ -88,7 +88,7 @@
                     event.preventDefault();
                     submitButton.textContent = 'Submitting...';
                     overlay.style.display = 'flex';
-                    
+
                     var email = document.getElementById('email').value;
                     var emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
                     if (!emailPattern.test(email)) {
@@ -118,12 +118,14 @@
                     })
                     .then(data => {
                         console.log('Data:', data);
-                        alert('Message sent successfully!');
+                        alert('Form succesfully submitted!');
                         document.getElementById('form-du-contact').reset();
+                        submitButton.textContent = 'Submitted!';
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('There was an error sending your message.');
+                        alert('There was an error submitting your form.');
+                        submitButton.textContent = 'Failed to Submit!';
                     });
                 });
             } else {
