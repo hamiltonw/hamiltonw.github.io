@@ -28,17 +28,22 @@
             <textarea id="body" name="body" required></textarea><br>
 
             <button type="submit">Submit</button>
+            <div id="form-overlay"></div>
         </form>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var form = document.getElementById('form-du-contact');
-            console.log('Form element:', form); // Log the form element
+            var submitButton = form.querySelector('button[type="submit"]');
+            var overlay = document.getElementById('form-overlay');
+
             if (form) {
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
-                    console.log('Form submitted');
+                    submitButton.textContent = 'Submitting...';
+                    overlay.style.display = 'flex';
+                    
                     var email = document.getElementById('email').value;
                     var emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
                     if (!emailPattern.test(email)) {
