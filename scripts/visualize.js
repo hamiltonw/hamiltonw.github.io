@@ -1,91 +1,99 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'OrbitControls';
-import * as d3 from 'd3';
+import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
 
-// Set up the scene, camera, and renderer
-console.log('Setting up scene, camera, and renderer...');
+// Initialize scene, camera, renderer, and controls
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, 600 / 400, 0.1, 1000); // Match the aspect ratio of the visualizer
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(600, 400); // Match the size of the visualizer
 document.getElementById('visualizer').appendChild(renderer.domElement);
-
-// Add controls for interaction
 const controls = new OrbitControls(camera, renderer.domElement);
 
-// Load the CSV file and parse the data
-console.log('Loading and parsing CSV file...');
-d3.csv('/data/points.csv').then(data => {
-    console.log(data);
-    // Variables to calculate the bounding box
-    let minX = Infinity, minY = Infinity, minZ = Infinity;
-    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+// Add a light source
+const light = new THREE.PointLight(0xffffff, 1);
+light.position.set(0, 0, 100);
+scene.add(light);
 
-    data.forEach(d => {
-        // Convert string values to numbers
-        d.x = +d.x;
-        d.y = +d.y;
-        d.z = +d.z;
+// Function to parse CSV data
+function parseCSV(data) {
+    const rows = data.trim().split('\n').slice(1); // Skip header row
+    return rows.map(row => row.split(',').map((value, index) => index < 3 ? parseFloat(value) : index < 6 ? parseInt(value) : value));
+}
 
-        console.log(`Adding point: (${d.x}, ${d.y}, ${d.z})`); // Add this line
+// Load and parse CSV file
+fetch('/data/points.csv')
+    .then(response => response.text())
+    .then(data => {
+        const points = [];
+        const classes = new Set();
+        const parsedData = parseCSV(data);
 
-        // Update bounding box values
-        if (d.x < minX) minX = d.x;
-        if (d.y < minY) minY = d.y;
-        if (d.z < minZ) minZ = d.z;
-        if (d.x > maxX) maxX = d.x;
-        if (d.y > maxY) maxY = d.y;
-        if (d.z > maxZ) maxZ = d.z;
+        let sumX = 0, sumY = 0, sumZ = 0;
 
-        // Create a sphere geometry for each point
-        const geometry = new THREE.SphereGeometry(0.1, 32, 32);
-        const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const sphere = new THREE.Mesh(geometry, material);
+        parsedData.forEach(row => {
+            const [x, y, z, r, g, b, C] = row;
+            classes.add(C);
 
-        // Set the position of the sphere
-        sphere.position.set(d.x, d.y, d.z);
+            sumX += x;
+            sumY += y;
+            sumZ += z;
 
-        // Add the sphere to the scene
-        scene.add(sphere);
-    });
+            const geometry = new THREE.SphereGeometry(0.1, 32, 32);
+            const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(`rgb(${r},${g},${b})`) });
+            const point = new THREE.Mesh(geometry, material);
+            point.position.set(x, y, z);
+            point.userData.class = C;
+            scene.add(point);
+            points.push(point);
+        });
 
-    // Calculate the center of the bounding box
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-    const centerZ = (minZ + maxZ) / 2;
+        // Calculate the centroid of the points
+        const centerX = sumX / parsedData.length;
+        const centerY = sumY / parsedData.length;
+        const centerZ = sumZ / parsedData.length;
 
-    // Calculate the size of the bounding box
-    const sizeX = maxX - minX;
-    const sizeY = maxY - minY;
-    const sizeZ = maxZ - minZ;
-    const maxSize = Math.max(sizeX, sizeY, sizeZ);
-
-    // Set the camera position to fit all points
-    camera.position.set(centerX, centerY, centerZ + maxSize * 1.5);
-    camera.lookAt(new THREE.Vector3(centerX, centerY, centerZ));
-
-    // Add a light source
-    const light = new THREE.PointLight(0xffffff, 1);
-    light.position.set(centerX, centerY, centerZ + maxSize * 2);
-    scene.add(light);
-
-    // Render the scene
-    const animate = function () {
-        requestAnimationFrame(animate);
-
-        // Update controls
+        // Set the camera position to center on the data
+        camera.position.set(centerX, centerY, centerZ + 10);
+        controls.target.set(centerX, centerY, centerZ);
         controls.update();
-        renderer.render(scene, camera);
-    };
 
-    animate();
-}).catch(error => {
-    console.error('Error loading or parsing CSV file:', error);
+        // Create menu with checkboxes
+        const menu = document.getElementById('menu');
+
+        classes.forEach(C => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.addEventListener('change', () => {
+                points.forEach(point => {
+                    if (point.userData.class === C) {
+                        point.visible = checkbox.checked;
+                    }
+                });
+            });
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(C));
+            menu.appendChild(label);
+            menu.appendChild(document.createElement('br'));
+        });
+
+        // Render the scene
+        const animate = function () {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        };
+
+        animate();
+    })
+    .catch(error => {
+        console.error('Error loading or parsing CSV file:', error);
 });
 
 // Handle window resize
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = 600 / 400; // Match the aspect ratio of the visualizer
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(600, 400); // Match the size of the visualizer
 });

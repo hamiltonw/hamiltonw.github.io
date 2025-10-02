@@ -1,7 +1,7 @@
 ---
-layout: page
+layout: page_3d_demo
 title: Shape of Protein Space
 permalink: /projects/proteins/
 ---
 
-More coming soon.
+Temporary content.

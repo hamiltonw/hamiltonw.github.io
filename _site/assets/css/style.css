@@ -149,3 +149,29 @@ main {
 .site-footer nav ul li a:hover {
     color: #007BFF;
 }
+
+
+/* VISUALIZER */
+#visualizer-container {
+    width: 600px; /* Adjust the width as needed */
+    height: 400px; /* Adjust the height as needed */
+    margin: 0 auto; /* Center the container */
+    position: relative;
+    z-index: 10; /* Ensure it appears above other elements */
+    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+}
+
+#visualizer {
+    width: 100%;
+    height: 100%;
+}
+
+#menu {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid black;
+    z-index: 20; /* Ensure it appears above the visualizer */
+}
